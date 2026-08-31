@@ -1,0 +1,12 @@
+---
+- name: AdGuard System aktualisieren
+  hosts: adguard
+  become: true
+  tasks:
+    - name: Paketliste aktualisieren
+      apt:
+        update_cache: yes
+
+    - name: Pakete upgraden
+      apt:
+        upgrade: dist

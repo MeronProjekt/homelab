@@ -1,0 +1,10 @@
+# Sensible Ansible-Dateien - niemals committen
+ansible-Proxmox/proxmox.yml
+ansible-Proxmox/copy-key.yml
+
+# Nextcloud Config (enthält DB-Passwörter/Secrets)
+nextcloud/config.php
+
+# Allgemein
+*.log
+.env

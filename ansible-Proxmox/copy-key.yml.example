@@ -1,0 +1,11 @@
+---
+- name: SSH-Key auf alle LXCs verteilen
+  hosts: proxmox_all_lxc
+  gather_facts: false
+  vars:
+    ansible_ssh_pass: "<DEIN-ROOT-PASSWORT-HIER>"
+  tasks:
+    - name: Public Key kopieren
+      authorized_key:
+        user: root
+        key: "{{ lookup('file', '/root/.ssh/id_ed25519.pub') }}"

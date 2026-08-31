@@ -1,0 +1,30 @@
+---
+- name: AdGuard warten und Status prüfen
+  hosts: proxmox_all_lxc
+  vars:
+    service_name: AdGuardHome
+
+  tasks:
+    - name: Paketliste aktualisieren
+      apt:
+        update_cache: yes
+
+    - name: Pakete upgraden
+      apt:
+        upgrade: dist
+      notify: Neustart Hinweis
+
+    - name: Prüfen ob AdGuard läuft
+      command: systemctl is-active {{ service_name }}
+      register: service_status
+      changed_when: false
+      failed_when: false
+
+    - name: Status ausgeben
+      debug:
+        msg: "AdGuard Service Status: {{ service_status.stdout }}"
+
+  handlers:
+    - name: Neustart Hinweis
+      debug:
+        msg: "Es gab Updates - eventuell Neustart nötig!"
