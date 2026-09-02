@@ -8,3 +8,6 @@ nextcloud/config.php
 # Allgemein
 *.log
 .env
+
+# Hermes Secrets
+KI-Agents/.env
