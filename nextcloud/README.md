@@ -1,47 +1,49 @@
-# Hermes — Eigener KI-Agent
+# Nextcloud (selbst gehostet)
 
-Selbst gebauter KI-Agent, der über Telegram kommuniziert: überwacht Webseiten, meldet 
-Status und Probleme proaktiv, und kann bei Bedarf verwaltend eingreifen.
+Eigene Nextcloud-Instanz für Dateisync, Kalender und Videomeetings (Nextcloud Talk, 
+bis zu 10 Teilnehmer) — von außen erreichbar über DuckDNS.
 
-## Architektur
+## Stack (Stand: September 2026)
 
+- **Betriebssystem**: Debian (LXC-Container 101 auf Proxmox)
+- **Webserver**: Apache 2.4.66
+- **PHP**: 8.2.30 (mit OPcache)
+- **Datenbank**: MariaDB 10.11.14
+- **Erreichbarkeit von außen**: DuckDNS + Nginx Proxy Manager (siehe [`../Proxy/`](../Proxy/README.md))
 
-Telegram ←→ hermes_agent (Python) ←→ Anthropic API (Claude)
-│
-└──→ hermes_mcp (Node.js, Model Context Protocol Server)
+## Warum dieses Setup?
 
+Bewusst **ohne Docker** aufgesetzt (klassisches LAMP-Stack), um Webserver-, PHP- und 
+Datenbank-Konfiguration in der Praxis zu verstehen, statt nur fertige Container zu starten.
 
-## Komponenten
+## Diagnose-Befehle (aktuellen Stand prüfen)
 
-| Service | Technologie | Zweck |
-|---|---|---|
-| `hermes_agent` | Python 3.12 | Kernlogik: Telegram-Kommunikation, Webseiten-Checks, Anthropic-API-Anbindung |
-| `hermes_mcp` | Node.js 20 | MCP-Server (Model Context Protocol) — strukturierte Tool-Anbindung für den Agenten |
+Alle Befehle werden vom **Proxmox-Host** aus per `pct exec` ausgeführt:
 
-## Stack
-- Docker Compose (siehe [`docker-compose.yml`](docker-compose.yml))
-- Anthropic Claude API (Haiku für schnelle Checks, Sonnet für komplexere Aufgaben)
-- Telegram Bot API
-
-## Setup
-
-1. `.env` aus [`.env.example`](.env.example) erstellen und mit echten Werten befüllen:
 ```bash
-   cp .env.example .env
-   nano .env
+# Apache-Version
+pct exec 101 -- apache2 -v
+
+# PHP-Version
+pct exec 101 -- php -v
+
+# MariaDB-Version
+pct exec 101 -- mysql --version
+
+# Installationspfad von Nextcloud finden
+pct exec 101 -- find / -maxdepth 3 -iname "nextcloud" -type d 2>/dev/null
+
+# Nextcloud-eigene Versionsnummer
+pct exec 101 -- php /var/www/nextcloud/occ status
 ```
-2. Container starten:
-```bash
-   docker compose up -d
-```
 
-## Sicherheitshinweis
+## Wichtige Hinweise
 
-Die echte `.env`-Datei mit API-Keys und Bot-Token wird **niemals** in diesem Repository 
-geführt (siehe `.gitignore`). Nur die `.env.example`-Vorlage mit Platzhaltern ist Teil 
-der Dokumentation.
+- Config-Dateien (`config.php`) und Zugangsdaten werden **bewusst nicht** in diesem 
+  Repository geführt, da sie Datenbank-Passwörter und Secrets enthalten
+- SSL/HTTPS wird über den vorgeschalteten Nginx Proxy Manager terminiert (Let's Encrypt)
 
-## Ressourcen-Limits
+## Nächste Schritte / Ausbau
 
-Der `hermes_agent`-Container läuft bewusst mit begrenzten Ressourcen (1.5 CPU-Kerne, 
-1536 MB RAM), um andere Services auf dem Proxmox-Host nicht zu beeinträchtigen.
+- [ ] Automatisiertes Backup der Nextcloud-Datenbank per Ansible
+- [ ] Monitoring der Nextcloud-Verfügbarkeit über Uptime-Kuma
