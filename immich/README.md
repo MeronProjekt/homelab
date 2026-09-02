@@ -19,6 +19,44 @@ Setup folgt der offiziellen Immich-Anleitung: https://docs.immich.app/install/do
 ```bash
    docker compose up -d
 ```
+
+## Installation (Grundschritte)
+
+Offizielle Installationsmethode via Docker Compose (Debian-Host mit installiertem Docker):
+
+```bash
+# Projektordner anlegen
+mkdir -p /root/immich && cd /root/immich
+
+# Offizielle docker-compose.yml herunterladen
+wget https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+
+# Beispiel-.env herunterladen und anpassen
+wget -O .env https://github.com/immich-app/immich/releases/latest/download/example.env
+nano .env
+# → UPLOAD_LOCATION, DB_PASSWORD, DB_USERNAME, DB_DATABASE_NAME eintragen
+
+# Container starten
+docker compose up -d
+
+# Status prüfen
+docker compose ps
+```
+
+Web-Interface danach erreichbar unter `http://<SERVER-IP>:2283` — Ersteinrichtung 
+(Admin-Account) erfolgt im Browser beim ersten Aufruf.
+
+## Migration von Google Photos
+
+1. Export aus Google Takeout
+2. Sortierung nach Datum/Metadaten mit [`immich-go`](https://github.com/simulot/immich-go):
+```bash
+   immich-go upload from-google-photos --server=http://<SERVER-IP>:2283 \
+       --api-key=<DEIN-API-KEY> /pfad/zu/takeout-export
+```
+3. Fotos erscheinen automatisch in der Immich-Bibliothek
+
+
 3. Web-Interface unter `http://<SERVER-IP>:2283` — Ersteinrichtung (Admin-Account) im Browser
 
 ## Workflow: Migration von Google Photos
