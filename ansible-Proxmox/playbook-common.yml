@@ -1,0 +1,6 @@
+---
+- name: Basis-Konfiguration auf allen Hosts
+  hosts: proxmox_all_lxc
+  become: false
+  roles:
+    - common

@@ -1,0 +1,17 @@
+---
+- name: Paketliste aktualisieren
+  apt:
+    update_cache: yes
+
+- name: Pakete upgraden
+  apt:
+    upgrade: dist
+  notify: Neustart Hinweis
+
+- name: Prüfen ob wichtige Basis-Tools installiert sind
+  apt:
+    name:
+      - curl
+      - htop
+      - vim
+    state: present

@@ -1,0 +1,4 @@
+---
+- name: Neustart Hinweis
+  debug:
+    msg: "Es gab Updates - eventuell Neustart nötig!"
